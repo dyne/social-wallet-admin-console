@@ -17,6 +17,7 @@
                            ;; freecoin deps
                            [org.clojars.dyne/freecoin-lib "0.3.0-SNAPSHOT"]
                            [org.clojars.dyne/auxiliary "0.1.0"]
+                           [org.clojars.dyne/clj-openssh-keygen "0.1.0"]
 
                            ;; logging done right with slf4j
                            [com.taoensso/timbre "4.10.0"]
@@ -28,7 +29,7 @@
 
                            ;; graphical visualization
                            [incanter/incanter-core "1.5.7" :upgrade :incanter]
-
+                           [incanter/incanter-charts "1.5.7" :upgrade :incanter]
                            ;; gorilla-repl deps
                            [http-kit "2.2.0"]
                            [compojure "1.6.0"]

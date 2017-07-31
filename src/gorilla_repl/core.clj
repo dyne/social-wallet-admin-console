@@ -12,6 +12,7 @@
             [gorilla-repl.version :as version]
             [gorilla-repl.handle :as handle]
             [clojure.set :as set]
+            [clj-openssh-keygen.core :as ssh]
             [clojure.java.io :as io])
   (:gen-class))
 
@@ -54,6 +55,10 @@
           webapp-port (:local-port (meta s))]
       (spit (doto gorilla-port-file .deleteOnExit) webapp-port)
       (println (str "Running at http://" ip ":" webapp-port "/index.html"))
+      (if (not (.exists (io/as-file "id_rsa"))) ;; TODO: hardcoded key, may use the one in ~/.ssh
+        (let [kp (ssh/generate-key-pair)]
+          (ssh/write-key-pair kp "id_rsa")))
+      (println (str "SSH Public key: " (slurp "id_rsa.pub")))
       (println "Ctrl+C to exit."))))
 
 (defn -main
