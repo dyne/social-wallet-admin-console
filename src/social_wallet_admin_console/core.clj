@@ -9,6 +9,7 @@
             [freecoin-lib.core :as core]
             [freecoin-lib.db.wallet :as wallet]
             [freecoin-lib.db.storage :as storage]
+            [incanter.core :refer :all]
             [gorilla-repl.table :refer :all]
             [clojure.contrib.humanize :refer :all]
             )
@@ -16,10 +17,6 @@
   )
 
 (def ctx (atom (app/start {})))
-
-(defn view-table [dati]
-  (table-view (map vals dati)
-              :columns (some keys dati)))
 
 
 (defn get-wallet []
@@ -31,19 +28,42 @@
 ;; (defn get-tags []
 ;;   (storage/get-tag-store (get-in @ctx [:backend :stores])))
 
+
+(defn view-table
+  "# Formats a dataset into an HTML table
+
+Facilitate the view of a dataset (`arg1`) in the console"
+  [data]
+  (table-view (map vals (:rows data))
+              :columns (:column-names data)))
+
 (defn list-participants
-  "list of participants in this wallet"
+  "# List of participants in this social wallet
+
+  `arg-1` *optional* map to select only rows containing value at
+  column.  Example: `{:name 'bernard'}`
+
+  `returns` a dataset ready for further transformations"
   ([] (list-participants {}))
-  ([query] (-> (get-wallet) (wallet/query query) view-table)))
+  ([query] (-> (get-wallet) (wallet/query query) to-dataset)))
 
 (defn list-transactions
-  "list of transactions"
+  "# List of transactions in this social wallet
+
+  `arg-1` *optional* map to select only rows containing value at
+  column.
+
+  `returns` a dataset ready for further transformations"
   ([] (list-transactions {}))
-  ([query] (-> (:backend @ctx) (core/list-transactions query) view-table)))
+  ([query] (-> (:backend @ctx) (core/list-transactions query) to-dataset)))
 
 (defn list-tags
-  "list of tags"
+  "# List of tags in this social wallet
+
+  `arg-1` *optional* map to select only rows containing value at column.
+
+  `returns` a dataset ready for further transformations" 
   ([] (list-tags {}))
-  ([query] (-> (:backend @ctx) (core/list-tags query) view-table)))
+  ([query] (-> (:backend @ctx) (core/list-tags query) to-dataset)))
 
   
