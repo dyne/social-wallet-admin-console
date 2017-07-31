@@ -38,8 +38,7 @@
                            [javax.servlet/servlet-api "2.5"]
                            [grimradical/clj-semver "0.3.0" :exclusions [org.clojure/clojure]]
                            [cider/cider-nrepl "0.15.0"]
-                           [org.clojure/tools.nrepl "0.2.13"]
-                           ]
+                           [org.clojure/tools.nrepl "0.2.13"]]
 
   :pedantic? :warn
 
@@ -60,6 +59,7 @@
   :resource-paths ["resources"]
   :template-additions ["ws/index.clj"]
   :main ^:skip-aot gorilla-repl.core
-  :profiles {:uberjar {:aot [gorilla-repl.core social-wallet-admin-console.core]}}
+  :profiles {:dev {:plugins [[lein-marginalia "0.9.0"]]}
+             :uberjar {:aot [gorilla-repl.core social-wallet-admin-console.core]}}
   :target-path "target/%s"
   )
