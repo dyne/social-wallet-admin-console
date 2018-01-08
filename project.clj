@@ -17,7 +17,7 @@
                            ;; freecoin deps
                            [org.clojars.dyne/freecoin-lib "0.3.0-SNAPSHOT"]
                            [org.clojars.dyne/auxiliary "0.1.0"]
-                           [org.clojars.dyne/clj-openssh-keygen "0.1.0"]
+                           ;; [org.clojars.dyne/clj-openssh-keygen "0.1.0"]
 
                            ;; logging done right with slf4j
                            [com.taoensso/timbre "4.10.0"]
