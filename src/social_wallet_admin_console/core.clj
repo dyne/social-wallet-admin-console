@@ -1,5 +1,6 @@
 (ns social-wallet-admin-console.core
-  (:require [clj-http.client :as client]
+  (:require [social-wallet-admin-console.dataset :refer :all]
+            [clj-http.client :as client]
             [clj-http.cookies :as cookies]
             [clojure.string :as string]
             [clojure.walk :refer :all]
@@ -13,26 +14,22 @@
             [gorilla-repl.table :refer :all]
             [clojure.contrib.humanize :as h]
             [auxiliary.core :refer :all])
-  (:gen-class)
-  )
+  (:gen-class))
 
 (def ctx (atom (app/start {})))
 
 
+;; TODO: temporarily stored here, these functions access directly the
+;; database, which shouldn't happen
 (defn get-wallet []
   (storage/get-wallet-store (get-in @ctx [:backend :stores-m])))
 (defn get-confirmations []
   (storage/get-confirmation-store (get-in @ctx [:backend :stores])))
+
 ;; (defn get-transactions []
 ;;   (storage/get-transaction-store (get-in @ctx [:backend :stores])))
 ;; (defn get-tags []
 ;;   (storage/get-tag-store (get-in @ctx [:backend :stores])))
-
-(defn get-type      [data] (get-in data [:meta :type]))
-
-(defn participants? [attr] (= attr :participants))
-(defn transactions? [attr] (= attr :transactions))
-(defn tags?         [attr] (= attr :tags))
 
 (defn view-table
   "# Formats a dataset into an HTML table
@@ -41,8 +38,7 @@ Facilitate the view of a dataset (`arg1`) in the console"
   [data] {:pre [(dataset? data)]}
 
   (if (get-in data [:meta :human])
-    (let [d (branch-on
-             (get-type data)
+    (let [d (branch-on data
              participants? data
 
              transactions? ($ [:time-ago :from-id :to-id :quantity :tags] data)
@@ -60,7 +56,7 @@ Facilitate the view of a dataset (`arg1`) in the console"
   "# Converts the values of a dataset to a form that is easily read by
   humans"
   [data] {:pre [(dataset? data)]}
-  (branch-on (get-type data)
+  (branch-on data
 
              participants? data
 

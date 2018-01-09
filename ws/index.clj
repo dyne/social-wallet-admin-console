@@ -10,12 +10,12 @@
 ;; @@
 (ns social-wallet-admin-console.term
   (:require
-   [clojure.string :as string]
-   [clojure.data.json :as json]
-   [clojure.contrib.humanize :refer :all]
-   [freecoin-lib.app :refer :all]
-   [social-wallet-admin-console.core :refer :all :reload :true])
-  (:use [gorilla-repl core table latex html]))
+   [clojure.repl :refer :all]
+   [incanter.core :refer :all]
+   [auxiliary [core docs maps :refer :all]]
+   [social-wallet-admin-console.core :refer :all :reload :true]
+   [social-wallet-admin-console.vis.graph2d :refer :all :reload :true])
+  (:use [gorilla-repl core table html]))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}

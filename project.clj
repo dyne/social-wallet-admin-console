@@ -29,7 +29,7 @@
 
                            ;; graphical visualization
                            [incanter/incanter-core "1.5.7" :upgrade :incanter]
-                           [incanter/incanter-charts "1.5.7" :upgrade :incanter]
+
                            ;; gorilla-repl deps
                            [http-kit "2.2.0"]
                            [compojure "1.6.0"]
