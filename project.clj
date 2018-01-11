@@ -40,8 +40,9 @@
                            [javax.servlet/servlet-api "2.5"]
                            [grimradical/clj-semver "0.3.0" :exclusions [org.clojure/clojure]]
                            [com.cemerick/nrepl "0.3.0-RC1"]
-                           #_[cider/cider-nrepl "0.16.0"]
-                           [org.clojure/tools.nrepl "0.2.13"]]
+                           #_[org.clojure/tools.nrepl "0.2.13"]
+                           [cider/cider-nrepl "0.16.0"]
+                           #_[org.clojure/tools.nrepl "0.2.13"]]
 
   :pedantic? :warn
 
