@@ -39,7 +39,8 @@
                            [gorilla-plot "0.1.4"]
                            [javax.servlet/servlet-api "2.5"]
                            [grimradical/clj-semver "0.3.0" :exclusions [org.clojure/clojure]]
-                           [cider/cider-nrepl "0.16.0"]
+                           [com.cemerick/nrepl "0.3.0-RC1"]
+                           #_[cider/cider-nrepl "0.16.0"]
                            [org.clojure/tools.nrepl "0.2.13"]]
 
   :pedantic? :warn
