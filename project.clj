@@ -1,4 +1,4 @@
-(defproject org.dyne/social-wallet-admin-console "0.1.0-SNAPSHOT"
+(defproject org.dyne/social-wallet-admin-console "0.2.0-SNAPSHOT"
   :description "Interactive admin console (REPL) for the social wallet"
   :url "https://freecoin.dyne.org"
 
@@ -10,18 +10,18 @@
   :dependencies ^:replace [[org.clojure/clojure "1.8.0"]
                            [org.clojure/data.json "0.2.6"]
                            [org.clojure/data.csv "0.1.4"]
-                           [clj-http "3.6.1"]
-                           [cheshire "5.7.1"]
+                           [clj-http "3.7.0"]
+                           [cheshire "5.8.0"]
                            [clojure-humanize "0.2.2"]
 
                            ;; freecoin deps
-                           [org.clojars.dyne/freecoin-lib "0.3.0-SNAPSHOT"]
-                           [org.clojars.dyne/auxiliary "0.1.0"]
+                           [org.clojars.dyne/freecoin-lib "0.8.0"]
+                           [org.clojars.dyne/auxiliary "0.4.0"]
                            ;; [org.clojars.dyne/clj-openssh-keygen "0.1.0"]
 
                            ;; logging done right with slf4j
                            [com.taoensso/timbre "4.10.0"]
-                           [com.fzakaria/slf4j-timbre "0.3.7"]
+                           [com.fzakaria/slf4j-timbre "0.3.8"]
                            [org.slf4j/slf4j-api "1.7.25"]
                            [org.slf4j/log4j-over-slf4j "1.7.25"]
                            [org.slf4j/jul-to-slf4j "1.7.25"]
@@ -39,7 +39,7 @@
                            [gorilla-plot "0.1.4"]
                            [javax.servlet/servlet-api "2.5"]
                            [grimradical/clj-semver "0.3.0" :exclusions [org.clojure/clojure]]
-                           [cider/cider-nrepl "0.15.0"]
+                           [cider/cider-nrepl "0.16.0"]
                            [org.clojure/tools.nrepl "0.2.13"]]
 
   :pedantic? :warn

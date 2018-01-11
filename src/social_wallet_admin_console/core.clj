@@ -9,7 +9,6 @@
             [freecoin-lib.app :as app]
             [freecoin-lib.core :as core]
             [freecoin-lib.db.wallet :as wallet]
-            [freecoin-lib.db.storage :as storage]
             [incanter.core :refer :all]
             [gorilla-repl.table :refer :all]
             [clojure.contrib.humanize :as h]
@@ -19,13 +18,13 @@
 (def ctx (atom (app/start {})))
 
 
-;; TODO: temporarily stored here, these functions access directly the
-;; database, which shouldn't happen
-(defn get-wallet []
-  (storage/get-wallet-store (get-in @ctx [:backend :stores-m])))
-(defn get-confirmations []
-  (storage/get-confirmation-store (get-in @ctx [:backend :stores])))
+;; ;; TODO: temporarily stored here, these functions access directly the
+;; ;; database, which shouldn't happen
+;; (defn get-wallet []
+;;   (storage/get-wallet-store (get-in @ctx [:backend :stores-m])))
+;; (defn get-confirmations []
 
+;;   (storage/get-confirmation-store (get-in @ctx [:backend :stores])))
 ;; (defn get-transactions []
 ;;   (storage/get-transaction-store (get-in @ctx [:backend :stores])))
 ;; (defn get-tags []
@@ -80,7 +79,7 @@ Facilitate the view of a dataset (`arg1`) in the console"
   ([] (list-participants {}))
   ([query] {:pre [(map? query)] :post [(dataset? %)]}
    (assoc
-    (-> (get-wallet) (wallet/query query) to-dataset)
+    (->  (:backend @ctx) core/list-accounts to-dataset)
     :meta {:type :participants})))
 
 (defn list-transactions
@@ -91,7 +90,9 @@ Facilitate the view of a dataset (`arg1`) in the console"
 
   `returns` a dataset ready for further transformations"
   ([] (list-transactions {}))
+
   ([query] {:pre [(map? query)] :post [(dataset? %)]}
+
    (with-data (-> (:backend @ctx) (core/list-transactions query) to-dataset)
      (assoc
       (->> (add-derived-column :time-ago [:timestamp] h/datetime)
