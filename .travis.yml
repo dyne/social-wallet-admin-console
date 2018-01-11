@@ -2,5 +2,6 @@ language: clojure
 script: lein test
 jdk:
   - oraclejdk8
+  - openjdk8
 services:
   - mongodb
