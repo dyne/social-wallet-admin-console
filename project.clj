@@ -21,7 +21,7 @@
 
                            ;; logging done right with slf4j
                            [com.taoensso/timbre "4.10.0"]
-                           [com.fzakaria/slf4j-timbre "0.3.8"]
+                           [com.fzakaria/slf4j-timbre "0.3.8" :exclusions [org.clojure/clojure]]
                            [org.slf4j/slf4j-api "1.7.25"]
                            [org.slf4j/log4j-over-slf4j "1.7.25"]
                            [org.slf4j/jul-to-slf4j "1.7.25"]
@@ -39,10 +39,10 @@
                            [gorilla-plot "0.1.4"]
                            [javax.servlet/servlet-api "2.5"]
                            [grimradical/clj-semver "0.3.0" :exclusions [org.clojure/clojure]]
-                           [com.cemerick/nrepl "0.3.0-RC1"]
-                           #_[org.clojure/tools.nrepl "0.2.13"]
-                           [cider/cider-nrepl "0.16.0"]
-                           #_[org.clojure/tools.nrepl "0.2.13"]]
+                           ;; This is needed to start a gorilla server from tests
+                           ;; https://github.com/cemerick/nREPL/issues/20
+                           [com.cemerick/nrepl "0.3.0-RC1"] 
+                           [cider/cider-nrepl "0.16.0"]]
 
   :pedantic? :warn
 
