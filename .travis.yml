@@ -1,5 +1,5 @@
 language: clojure
-script: lein midje
+script: lein run
 jdk:
   - openjdk7
   - oraclejdk7
