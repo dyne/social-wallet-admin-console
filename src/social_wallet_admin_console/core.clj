@@ -105,6 +105,7 @@ Facilitate the view of a dataset (`arg1`) in the console"
    :tags    [array of tags]}"
   [{:keys [from amount to tags]}]
   (try
+    ;; TODO: Test if participant exists
     (core/create-transaction
      (:backend @ctx) from
      amount to {:tags tags})

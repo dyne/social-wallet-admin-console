@@ -24,6 +24,7 @@
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
 ;; @@
+
 (create-participant {:name "ClearingHouse"
                      :email "clearing@pirates.net"})
 (def tags [ "ship" "treasure" "plunging" "island" "harbor" "sailing" ])
@@ -33,17 +34,33 @@
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
 ;; @@
-(map #(create-participant {:name % :email (str % "@pirates.net")})
-     (take 100 pirates))
+
+(def participants 
+  (map #(create-participant {:name % :email (str % "@pirates.net")})
+       (take 100 pirates)))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
 ;; @@
-(map #(create-transaction
-       {:from "clearing@pirates.net"
-        :amount (-> 3 rand/create :integer)
-        :to (str % "pirates.net")
-        :tags [(nth tags (-> 1 rand/create :integer (mod 6)))]})
-     (take 100 pirates))
+
+(def funds
+  (map #(create-transaction {:from "clearing@pirates.net"
+                             :amount 100
+                             :to (str % "@pirates.net")})
+       (take 100 pirates)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+;; @@
+
+(def transactions
+  (for [c (-> 5 rand range)]  
+    (map #(create-transaction
+           {:from (str % "@pirates.net")
+            :amount (-> 2 rand/create :integer)
+            :to (str (nth pirates (rand 100)) "@pirates.net")
+            :tags [(nth tags (rand (count tags)))]})
+         (take 100 pirates))))
 ;; @@
