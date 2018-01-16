@@ -26,7 +26,8 @@
 ;; @@
 
 (create-participant {:name "ClearingHouse"
-                     :email "clearing@pirates.net"})
+                     :email "clearing@pirates.net"
+                     :password "harr"})
 (def tags [ "ship" "treasure" "plunging" "island" "harbor" "sailing" ])
 (def pirates (-> "social-wallet-admin-console/pirates.txt" io/resource slurp (split #"\n")))
 ;; @@
@@ -35,32 +36,31 @@
 ;; <=
 ;; @@
 
-(def participants 
-  (map #(create-participant {:name % :email (str % "@pirates.net")})
-       (take 100 pirates)))
+(map #(create-participant {:name %
+                           :email (str % "@pirates.net")
+                           :password "harr"})
+     (take 100 pirates))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
 ;; @@
 
-(def funds
-  (map #(create-transaction {:from "clearing@pirates.net"
-                             :amount 100
-                             :to (str % "@pirates.net")})
-       (take 100 pirates)))
+(map #(create-transaction {:from "clearing@pirates.net"
+                           :amount 100
+                           :to (str % "@pirates.net")})
+     (take 100 pirates))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
 ;; @@
 
-(def transactions
-  (for [c (-> 5 rand range)]  
-    (map #(create-transaction
-           {:from (str % "@pirates.net")
-            :amount (-> 2 rand/create :integer)
-            :to (str (nth pirates (rand 100)) "@pirates.net")
-            :tags [(nth tags (rand (count tags)))]})
-         (take 100 pirates))))
+(for [c (-> 5 rand range)]  
+  (map #(create-transaction
+         {:from (str % "@pirates.net")
+          :amount (-> 2 rand/create :integer)
+          :to (str (nth pirates (rand 100)) "@pirates.net")
+          :tags [(nth tags (rand (count tags)))]})
+       (take 100 pirates)))
 ;; @@
