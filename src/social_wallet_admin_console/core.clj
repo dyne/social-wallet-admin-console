@@ -95,6 +95,15 @@ Facilitate the view of a dataset (`arg1`) in the console"
     (catch Exception e
       (print (str "ERROR: " (.getMessage e))))))
 
+(defn create-wallet
+  [{:keys [name email]}]
+  (try
+    (wallet/new-empty-wallet!
+        (-> @ctx :backend :stores-m :wallet-store)
+      (:backend @ctx) name email)
+    (catch Exception e
+      (print (str "ERROR: " (.getMessage e))))))
+
 (defn create-transaction
   "# Create a new transaction between participants of this social wallet
 
