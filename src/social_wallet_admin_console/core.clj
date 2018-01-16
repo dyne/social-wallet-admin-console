@@ -9,14 +9,25 @@
             [freecoin-lib.app :as app]
             [freecoin-lib.core :as core]
             [freecoin-lib.db.wallet :as wallet]
+            [just-auth.core :as auth]
+            [just-auth.db.just-auth :as auth-db]
             [incanter.core :refer :all]
             [gorilla-repl.table :refer :all]
             [clojure.contrib.humanize :as h]
             [auxiliary.core :refer :all])
   (:gen-class))
 
-(def ctx (atom (app/start {})))
-
+;; {:db db
+;;  :config (:freecoin config)
+;;  :backend backend})))
+(def email (atom []))
+(def ctx
+  (atom
+   (let [fc-lib (app/start {})
+         auth-lib {:auth (-> (:db fc-lib)
+                             auth-db/create-auth-stores
+                             (auth/new-stub-email-based-authentication email))}]
+     (conj fc-lib auth-lib))))
 
 ;; ;; TODO: temporarily stored here, these functions access directly the
 ;; ;; database, which shouldn't happen
@@ -68,6 +79,38 @@ Facilitate the view of a dataset (`arg1`) in the console"
              tags? data
 
              :else data))
+
+(defn create-participant
+  "# Create a new participant in this social wallet
+
+  `arg-1` map of information containing:
+  {:name      name of participant
+   :email     email of participant
+   :password  password for account
+   :2fa       second factor auth config
+   :othername other names}"
+  [{:keys [name email]}]
+  (try
+    (auth/sign-up (:auth @ctx) name email "xxx" {} "")
+    (catch Exception e
+      (print (str "ERROR: " (.getMessage e))))))
+
+(defn create-transaction
+  "# Create a new transaction between participants of this social wallet
+
+  `arg-1` map of information containing:
+  {:from    email of sender
+   :amount  amount of units to send
+   :to      email of recipient
+   :tags    [array of tags]}"
+  [{:keys [from amount to tags]}]
+  (try
+    ;; TODO: Test if participant exists
+    (core/create-transaction
+     (:backend @ctx) from
+     amount to {:tags tags})
+    (catch Exception e
+      (print (str "ERROR: " (.getMessage e))))))
 
 (defn list-participants
   "# List of participants in this social wallet
