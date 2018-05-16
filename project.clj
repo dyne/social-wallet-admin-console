@@ -43,7 +43,7 @@
                            ;; This is needed to start a gorilla server from tests
                            ;; https://github.com/cemerick/nREPL/issues/20
                            [com.cemerick/nrepl "0.3.0-RC1"] 
-                           [cider/cider-nrepl "0.16.0"]]
+                           [cider/cider-nrepl "0.17.0"]]
 
   :pedantic? :warn
 
