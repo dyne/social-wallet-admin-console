@@ -8,7 +8,9 @@
             [freecoin-lib.core :as core]
             [freecoin-lib.db.wallet :as wallet]
             [just-auth.core :as auth]
-            [just-auth.db.just-auth :as auth-db]
+            [just-auth.db
+             [just-auth :as auth-db]
+             [account :as account]]
             [incanter.core :refer :all]
             [gorilla-repl.table :refer [table-view]]
             [clojure.contrib.humanize :as h]
@@ -115,7 +117,7 @@ Facilitate the view of a dataset (`arg1`) in the console"
   ([] (list-participants {}))
   ([query] {:pre [(map? query)] :post [(dataset? %)]}
    (assoc
-    (->  (:backend @ctx) core/list-accounts to-dataset)
+    (-> ctx :backend :stores-m log/spy :account-store account/list to-dataset)
     :meta {:type :participants})))
 
 (defn list-transactions

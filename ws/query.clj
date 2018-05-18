@@ -32,3 +32,21 @@
 (-> (list-transactions {:account-id "brenningham@pirates.net"}) view-table)
 
 ;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+;; @@
+
+;; View transactions for tag
+(-> (list-transactions {:tags ["treasure"]}) view-table)
+
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+;; @@
+
+;; View all participants
+(list-participants)
+
+;; @@
