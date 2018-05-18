@@ -3,8 +3,6 @@
             [clj-http.client :as client]
             [clj-http.cookies :as cookies]
             [clojure.string :as string]
-            [clojure.walk :refer :all]
-            [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [freecoin-lib.app :as app]
             [freecoin-lib.core :as core]
@@ -12,34 +10,20 @@
             [just-auth.core :as auth]
             [just-auth.db.just-auth :as auth-db]
             [incanter.core :refer :all]
-            [gorilla-repl.table :refer :all]
+            [gorilla-repl.table :refer [table-view]]
             [clojure.contrib.humanize :as h]
-            [auxiliary.core :refer :all])
+            [auxiliary.core :refer :all]
+            [taoensso.timbre :as log])
   (:gen-class))
 
-;; {:db db
-;;  :config (:freecoin config)
-;;  :backend backend})))
-(def email (atom []))
-(def ctx
+(def emails (atom []))
+(defonce ctx
   (atom
    (let [fc-lib (app/start {})
          auth-lib {:auth (-> (:db fc-lib)
                              auth-db/create-auth-stores
-                             (auth/new-stub-email-based-authentication email))}]
+                             (auth/new-stub-email-based-authentication emails))}]
      (conj fc-lib auth-lib))))
-
-;; ;; TODO: temporarily stored here, these functions access directly the
-;; ;; database, which shouldn't happen
-;; (defn get-wallet []
-;;   (storage/get-wallet-store (get-in @ctx [:backend :stores-m])))
-;; (defn get-confirmations []
-
-;;   (storage/get-confirmation-store (get-in @ctx [:backend :stores])))
-;; (defn get-transactions []
-;;   (storage/get-transaction-store (get-in @ctx [:backend :stores])))
-;; (defn get-tags []
-;;   (storage/get-tag-store (get-in @ctx [:backend :stores])))
 
 (defn view-table
   "# Formats a dataset into an HTML table
@@ -147,8 +131,7 @@ Facilitate the view of a dataset (`arg1`) in the console"
 
    (with-data (-> (:backend @ctx) (core/list-transactions query) to-dataset)
      (assoc
-      (->> (add-derived-column :time-ago [:timestamp] h/datetime)
-           (add-derived-column :quantity [:amount] h/intword))
+      (->> (add-derived-column :time-ago [:timestamp] h/datetime))
       :meta {:type :transactions}))))
 
 (defn list-tags
