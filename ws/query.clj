@@ -47,6 +47,6 @@
 ;; @@
 
 ;; View all participants
-(list-participants)
+(view-table (list-participants))
 
 ;; @@

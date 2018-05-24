@@ -117,7 +117,10 @@ Facilitate the view of a dataset (`arg1`) in the console"
   ([] (list-participants {}))
   ([query] {:pre [(map? query)] :post [(dataset? %)]}
    (assoc
-    (-> ctx :backend :stores-m log/spy :account-store account/list to-dataset)
+    (-> @ctx :auth :account-activator :account-store
+        account/list
+        (as-> accounts (map #(dissoc % :password) accounts))
+        to-dataset)
     :meta {:type :participants})))
 
 (defn list-transactions
