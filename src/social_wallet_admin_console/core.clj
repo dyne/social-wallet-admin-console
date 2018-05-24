@@ -15,7 +15,8 @@
             [gorilla-repl.table :refer [table-view]]
             [clojure.contrib.humanize :as h]
             [auxiliary.core :refer :all]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            [clj-storage.core :as storage])
   (:gen-class))
 
 (def emails (atom []))
@@ -150,3 +151,16 @@ Facilitate the view of a dataset (`arg1`) in the console"
    (assoc
     (-> (:backend @ctx) (core/list-tags query) to-dataset)
     :meta {:type :tags})))
+
+(defn empty-db
+  "# Meant for administrative purposes and during development
+
+  `arg-1` *optional* vector with specific db collections to be emptied
+
+   `returns` a message of which collections were emptied"
+  ([] (empty-db (merge (-> @ctx :backend :stores-m)
+                       (-> @ctx :auth :account-activator (dissoc :emails))
+                       (-> @ctx :auth :password-recoverer (dissoc :emails)))))
+  ([collections]
+   (dorun (map #(storage/delete-all! %) (vals collections)))
+   (log/info "Emptied " (keys collections))))
