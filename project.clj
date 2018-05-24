@@ -40,10 +40,6 @@
                            [gorilla-plot "0.1.4"]
                            [javax.servlet/servlet-api "2.5"]
                            [grimradical/clj-semver "0.3.0" :exclusions [org.clojure/clojure]]
-                           ;; This is needed to start a gorilla server from tests
-                           ;; https://github.com/cemerick/nREPL/issues/20
-                           ;; FIXME: what is this for????
-                           [com.cemerick/nrepl "0.3.0-RC1"] 
                            [cider/cider-nrepl "0.17.0"]]
 
   :pedantic? :warn
