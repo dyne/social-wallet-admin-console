@@ -64,7 +64,9 @@
   :resource-paths ["resources"]
   :template-additions ["ws/index.clj"]
   :main ^:skip-aot gorilla-repl.core
-  :profiles {:dev {:plugins [[lein-marginalia "0.9.0"]]}
+  :profiles {:dev {:dependencies [[midje "1.9.1"]]
+                   :plugins [[lein-marginalia "0.9.0"]
+                             [lein-midje "3.2.1"]]}
              :uberjar {:aot [gorilla-repl.core social-wallet-admin-console.core]}}
   :target-path "target/%s"
   )

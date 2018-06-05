@@ -15,6 +15,8 @@
             [clojure.java.io :as io])
   (:gen-class))
 
+(defonce server (atom nil))
+
 ;; the combined routes - we serve up everything in the "public" directory of resources under "/".
 ;; The REPL traffic is handled in the websocket-transport ns.
 (defroutes app-routes
@@ -51,6 +53,7 @@
     (nrepl/start-and-connect nrepl-requested-port nrepl-port-file)
     ;; and then the webserver
     (let [s (server/run-server #'app-routes {:port webapp-requested-port :join? false :ip ip :max-body 500000000})
+          _ (reset! server s)
           webapp-port (:local-port (meta s))]
       (spit (doto gorilla-port-file .deleteOnExit) webapp-port)
       (println (str "Running at http://" ip ":" webapp-port "/index.html"))
@@ -59,6 +62,13 @@
       ;;     (ssh/write-key-pair kp "id_rsa")))
       ;; (println (str "SSH Public key: " (slurp "id_rsa.pub")))
       (println "Ctrl+C to exit."))))
+
+(defn stop-server []
+  (when-not (nil? @server)
+    ;; graceful shutdown: wait 100ms for existing requests to be finished
+    ;; :timeout is optional, when no timeout, stop immediately
+    (@server :timeout 100)
+    (reset! server nil)))
 
 (defn -main
   [& args]

@@ -8,9 +8,8 @@
             [freecoin-lib.core :as core]
             [freecoin-lib.db.wallet :as wallet]
             [just-auth.core :as auth]
-            [just-auth.db
-             [just-auth :as auth-db]
-             [account :as account]]
+            ;; TODO: shoul;d not have to access db level from outside the project
+            [just-auth.db.just-auth :as auth-db]
             [incanter.core :refer :all]
             [gorilla-repl.table :refer [table-view]]
             [clojure.contrib.humanize :as h]
@@ -118,9 +117,9 @@ Facilitate the view of a dataset (`arg1`) in the console"
   ([] (list-participants {}))
   ([query] {:pre [(map? query)] :post [(dataset? %)]}
    (assoc
-    (-> @ctx :auth :account-activator :account-store
-        account/list
-        (as-> accounts (map #(dissoc % :password) accounts))
+    (-> @ctx :auth 
+        (auth/list-accounts {})
+        (as-> accounts (map #(dissoc % :password :activated) accounts))
         to-dataset)
     :meta {:type :participants})))
 
