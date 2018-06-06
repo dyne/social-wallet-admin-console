@@ -19,8 +19,22 @@
   (:gen-class))
 
 (def emails (atom []))
-(defonce ctx
-  (atom
+(defonce ctx (atom {}))
+
+;; TODO schema
+(defn start [config]
+  (log/merge-config! {:level (keyword (:log-level config))
+                      ;; #{:trace :debug :info :warn :error :fatal :report}
+
+                      ;; Control log filtering by
+                      ;; namespaces/patterns. Useful for turning off
+                      ;; logging in noisy libraries, etc.:
+                      :ns-whitelist  ["social-wallet-api.*"
+                                      "freecoin-lib.*"
+                                      "clj-storage.*"]
+                      :ns-blacklist  ["org.eclipse.jetty.*"
+                                      "org.mongodb.driver.*"]})
+  (reset! ctx
    (let [fc-lib (app/start {})
          auth-lib {:auth (-> (:db fc-lib)
                              auth-db/create-auth-stores
