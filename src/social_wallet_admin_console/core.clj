@@ -10,7 +10,7 @@
             [just-auth.core :as auth]
             ;; TODO: shoul;d not have to access db level from outside the project
             [just-auth.db.just-auth :as auth-db]
-            [incanter.core :refer :all]
+            [incanter.core :as incanter]
             [gorilla-repl.table :refer [table-view]]
             [clojure.contrib.humanize :as h]
             [auxiliary.core :refer :all]
@@ -23,7 +23,7 @@
 
 ;; TODO schema
 (defn start [config]
-  (log/merge-config! {:level (keyword (:log-level config))
+  (log/merge-config! {:level (keyword (or (:log-level config) "debug"))
                       ;; #{:trace :debug :info :warn :error :fatal :report}
 
                       ;; Control log filtering by
@@ -50,13 +50,13 @@
   "# Formats a dataset into an HTML table
 
 Facilitate the view of a dataset (`arg1`) in the console"
-  [data] {:pre [(dataset? data)]}
+  [data] {:pre [(incanter/dataset? data)]}
 
   (if (get-in data [:meta :human])
     (let [d (branch-on data
              participants? data
 
-             transactions? ($ [:time-ago :from-id :to-id :quantity :tags] data)
+             transactions? (incanter/$ [:time-ago :from-id :to-id :quantity :tags] data)
 
              tags? data
              :else data)]
@@ -70,16 +70,16 @@ Facilitate the view of a dataset (`arg1`) in the console"
 (defn humanize
   "# Converts the values of a dataset to a form that is easily read by
   humans"
-  [data] {:pre [(dataset? data)]}
+  [data] {:pre [(incanter/dataset? data)]}
   (branch-on data
 
              participants? data
 
              transactions?
-             (with-data data
-               (add-derived-column :time-ago [:timestamp] h/datetime)
-               (add-derived-column :quantity [:amount] h/intword)
-               (update-in $data [:meta] assoc :human true))
+             (incanter/with-data data
+               (incanter/add-derived-column :time-ago [:timestamp] h/datetime)
+               (incanter/add-derived-column :quantity [:amount] h/intword)
+               (update-in incanter/$data [:meta] assoc :human true))
 
              tags? data
 
@@ -134,12 +134,12 @@ Facilitate the view of a dataset (`arg1`) in the console"
 
   `returns` a dataset ready for further transformations"
   ([] (list-participants {}))
-  ([query] {:pre [(map? query)] :post [(dataset? %)]}
+  ([query] {:pre [(map? query)] :post [(incanter/dataset? %)]}
    (assoc
     (-> @ctx :auth 
         (auth/list-accounts {})
         (as-> accounts (map #(dissoc % :password :activated) accounts))
-        to-dataset)
+        incanter/to-dataset)
     :meta {:type :participants})))
 
 (defn list-transactions
@@ -151,12 +151,20 @@ Facilitate the view of a dataset (`arg1`) in the console"
   `returns` a dataset ready for further transformations"
   ([] (list-transactions {}))
 
-  ([query] {:pre [(map? query)] :post [(dataset? %)]}
+  ([query] {:pre [(map? query)] :post [(incanter/dataset? %)]}
 
-   (with-data (-> (:backend @ctx) (core/list-transactions query) to-dataset)
+   (incanter/with-data (-> (:backend @ctx) (core/list-transactions query) incanter/to-dataset)
      (assoc
-      (->> (add-derived-column :time-ago [:timestamp] h/datetime))
+      (->> (incanter/add-derived-column :time-ago [:timestamp] h/datetime))
       :meta {:type :transactions}))))
+
+(defn list-transactions-plain
+  ([] (list-transactions-plain {}))
+  ([query] {:pre [(map? query)] }
+   (core/list-transactions (:backend @ctx) query)))
+
+(defn counts-per-tag []
+  )
 
 (defn list-tags
   "# List of tags in this social wallet
@@ -167,7 +175,7 @@ Facilitate the view of a dataset (`arg1`) in the console"
   ([] (list-tags {}))
   ([query] {:pre [(map? query)]}
    (assoc
-    (-> (:backend @ctx) (core/list-tags query) to-dataset)
+    (-> (:backend @ctx) (core/list-tags query) incanter/to-dataset)
     :meta {:type :tags})))
 
 (defn empty-db

@@ -29,7 +29,7 @@
 ;; @@
 
 ;; View transactions for brenningham@pirates.net
-(-> (list-transactions {:account-id "brenningham@pirates.net"}) view-table)
+(-> (list-transactionso {:account-id "brenningham@pirates.net"}) view-table)
 
 ;; @@
 ;; =>
