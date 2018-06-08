@@ -41,6 +41,11 @@
                              (auth/new-stub-email-based-authentication emails))}]
      (conj fc-lib auth-lib))))
 
+(defn stop []
+  (when-not (nil? ctx)
+    (app/disconnect-mongo ctx)
+    (reset! ctx nil)))
+
 (defn view-table
   "# Formats a dataset into an HTML table
 
