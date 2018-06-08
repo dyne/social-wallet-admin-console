@@ -63,7 +63,7 @@
       ;; (println (str "SSH Public key: " (slurp "id_rsa.pub")))
       (println "Ctrl+C to exit."))))
 
-(defn stop-server []
+(defn stop-gorilla-server []
   (when-not (nil? @server)
     ;; graceful shutdown: wait 100ms for existing requests to be finished
     ;; :timeout is optional, when no timeout, stop immediately
