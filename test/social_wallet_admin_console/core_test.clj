@@ -9,7 +9,7 @@
             [clojure.string :as str]))
 
 (against-background [(before :contents (gc/run-gorilla-server {:port 8990}))
-                     (after :contents (gc/stop-server))]
+                     (after :contents (gc/stop-gorilla-server))]
                     (facts "Check that the repl is accessible"
                            (:status @(http/get "http://127.0.0.1:8990/index.html")) => 200
                            (-> @(http/get "http://127.0.0.1:8990/gorilla-files")
