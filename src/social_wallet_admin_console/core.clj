@@ -3,43 +3,48 @@
             [clj-http.client :as client]
             [clj-http.cookies :as cookies]
             [clojure.string :as string]
-            [clojure.walk :refer :all]
-            [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [freecoin-lib.app :as app]
             [freecoin-lib.core :as core]
             [freecoin-lib.db.wallet :as wallet]
             [just-auth.core :as auth]
+            ;; TODO: shoul;d not have to access db level from outside the project
             [just-auth.db.just-auth :as auth-db]
             [incanter.core :refer :all]
-            [gorilla-repl.table :refer :all]
+            [gorilla-repl.table :refer [table-view]]
             [clojure.contrib.humanize :as h]
-            [auxiliary.core :refer :all])
+            [auxiliary.core :refer :all]
+            [taoensso.timbre :as log]
+            [clj-storage.core :as storage])
   (:gen-class))
 
-;; {:db db
-;;  :config (:freecoin config)
-;;  :backend backend})))
-(def email (atom []))
-(def ctx
-  (atom
+(def emails (atom []))
+(defonce ctx (atom {}))
+
+;; TODO schema
+(defn start [config]
+  (log/merge-config! {:level (keyword (:log-level config))
+                      ;; #{:trace :debug :info :warn :error :fatal :report}
+
+                      ;; Control log filtering by
+                      ;; namespaces/patterns. Useful for turning off
+                      ;; logging in noisy libraries, etc.:
+                      :ns-whitelist  ["social-wallet-api.*"
+                                      "freecoin-lib.*"
+                                      "clj-storage.*"]
+                      :ns-blacklist  ["org.eclipse.jetty.*"
+                                      "org.mongodb.driver.*"]})
+  (reset! ctx
    (let [fc-lib (app/start {})
          auth-lib {:auth (-> (:db fc-lib)
                              auth-db/create-auth-stores
-                             (auth/new-stub-email-based-authentication email))}]
+                             (auth/new-stub-email-based-authentication emails))}]
      (conj fc-lib auth-lib))))
 
-;; ;; TODO: temporarily stored here, these functions access directly the
-;; ;; database, which shouldn't happen
-;; (defn get-wallet []
-;;   (storage/get-wallet-store (get-in @ctx [:backend :stores-m])))
-;; (defn get-confirmations []
-
-;;   (storage/get-confirmation-store (get-in @ctx [:backend :stores])))
-;; (defn get-transactions []
-;;   (storage/get-transaction-store (get-in @ctx [:backend :stores])))
-;; (defn get-tags []
-;;   (storage/get-tag-store (get-in @ctx [:backend :stores])))
+(defn stop []
+  (when-not (nil? ctx)
+    (app/disconnect-mongo ctx)
+    (reset! ctx nil)))
 
 (defn view-table
   "# Formats a dataset into an HTML table
@@ -131,7 +136,10 @@ Facilitate the view of a dataset (`arg1`) in the console"
   ([] (list-participants {}))
   ([query] {:pre [(map? query)] :post [(dataset? %)]}
    (assoc
-    (->  (:backend @ctx) core/list-accounts to-dataset)
+    (-> @ctx :auth 
+        (auth/list-accounts {})
+        (as-> accounts (map #(dissoc % :password :activated) accounts))
+        to-dataset)
     :meta {:type :participants})))
 
 (defn list-transactions
@@ -147,8 +155,7 @@ Facilitate the view of a dataset (`arg1`) in the console"
 
    (with-data (-> (:backend @ctx) (core/list-transactions query) to-dataset)
      (assoc
-      (->> (add-derived-column :time-ago [:timestamp] h/datetime)
-           (add-derived-column :quantity [:amount] h/intword))
+      (->> (add-derived-column :time-ago [:timestamp] h/datetime))
       :meta {:type :transactions}))))
 
 (defn list-tags
@@ -162,3 +169,16 @@ Facilitate the view of a dataset (`arg1`) in the console"
    (assoc
     (-> (:backend @ctx) (core/list-tags query) to-dataset)
     :meta {:type :tags})))
+
+(defn empty-db
+  "# Meant for administrative purposes and during development
+
+  `arg-1` *optional* vector with specific db collections to be emptied
+
+   `returns` a message of which collections were emptied"
+  ([] (empty-db (merge (-> @ctx :backend :stores-m)
+                       (-> @ctx :auth :account-activator (dissoc :emails))
+                       (-> @ctx :auth :password-recoverer (dissoc :emails)))))
+  ([collections]
+   (dorun (map #(storage/delete-all! %) (vals collections)))
+   (log/info "Emptied " (keys collections))))

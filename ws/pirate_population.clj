@@ -47,7 +47,7 @@
 ;; @@
 
 (map #(create-transaction {:from "clearing@pirates.net"
-                           :amount 100
+                           :amount "100"
                            :to (str % "@pirates.net")})
      (take 100 pirates))
 ;; @@
@@ -59,7 +59,7 @@
 (for [c (-> 5 rand range)]  
   (map #(create-transaction
          {:from (str % "@pirates.net")
-          :amount (-> 2 rand/create :integer)
+          :amount (str (-> 2 rand/create :integer))
           :to (str (nth pirates (rand 100)) "@pirates.net")
           :tags [(nth tags (rand (count tags)))]})
        (take 100 pirates)))

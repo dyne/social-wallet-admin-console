@@ -15,9 +15,9 @@
                            [clojure-humanize "0.2.2"]
 
                            ;; freecoin deps
-                           [org.clojars.dyne/freecoin-lib "0.8.0"]
+                           [org.clojars.dyne/freecoin-lib "0.9.3.1"]
                            [org.clojars.dyne/auxiliary "0.4.0"]
-                           [org.clojars.dyne/just-auth "0.1.0"]
+                           [org.clojars.dyne/just-auth "0.2.1"]
                            ;; [org.clojars.dyne/clj-openssh-keygen "0.1.0"]
 
                            ;; logging done right with slf4j
@@ -43,7 +43,7 @@
                            ;; This is needed to start a gorilla server from tests
                            ;; https://github.com/cemerick/nREPL/issues/20
                            [com.cemerick/nrepl "0.3.0-RC1"] 
-                           [cider/cider-nrepl "0.16.0"]]
+                           [cider/cider-nrepl "0.17.0"]]
 
   :pedantic? :warn
 
@@ -64,7 +64,10 @@
   :resource-paths ["resources"]
   :template-additions ["ws/index.clj"]
   :main ^:skip-aot gorilla-repl.core
-  :profiles {:dev {:plugins [[lein-marginalia "0.9.0"]]}
+  :profiles {:dev {:dependencies [[midje "1.9.1"]
+                                  [hickory/hickory "0.7.1"]]
+                   :plugins [[lein-marginalia "0.9.0"]
+                             [lein-midje "3.2.1"]]}
              :uberjar {:aot [gorilla-repl.core social-wallet-admin-console.core]}}
   :target-path "target/%s"
   )
