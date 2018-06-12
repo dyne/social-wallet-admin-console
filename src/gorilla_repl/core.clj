@@ -12,7 +12,8 @@
             [gorilla-repl.version :as version]
             [gorilla-repl.handle :as handle]
             [clojure.set :as set]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [social-wallet-admin-console.core :as swac])
   (:gen-class))
 
 (defonce server (atom nil))
@@ -72,4 +73,5 @@
 
 (defn -main
   [& args]
+  (swac/start {:log-level "debug"})
   (run-gorilla-server {:port 8990}))
